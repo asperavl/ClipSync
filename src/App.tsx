@@ -1,50 +1,82 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
+import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+import { TopBar } from "./components/TopBar";
+import { Sidebar } from "./components/Sidebar";
+import { ClipLibrary } from "./components/ClipLibrary";
+import { Settings } from "./components/Settings";
+import { ClipDetail } from "./components/ClipDetail";
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+export interface ClipMetadata {
+  id: string;
+  title: string;
+  game_name: string | null;
+  date_recorded: number;
+  duration_secs: number;
+  cloud_status: string;
+  is_favorite: boolean;
+  file_path: string;
+  thumbnail_path: string;
+}
+
+function App() {
+  const [currentView, setCurrentView] = useState<'library' | 'settings'>('library');
+  const [selectedClipId, setSelectedClipId] = useState<string | null>(null);
+  
+  const [clips, setClips] = useState<ClipMetadata[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+
+  // Fetch initial data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchedClips = await invoke<ClipMetadata[]>('get_all_clips');
+        setClips(fetchedClips.sort((a, b) => b.date_recorded - a.date_recorded));
+        
+        const status = await invoke<string>('get_status');
+        setIsRecording(status === 'buffering' || status === 'saving');
+      } catch (e) {
+        console.error("Failed to fetch data:", e);
+      }
+    };
+    
+    fetchData();
+    
+    // Poll for status updates
+    const interval = setInterval(async () => {
+      try {
+        const status = await invoke<string>('get_status');
+        setIsRecording(status === 'buffering' || status === 'saving');
+        
+        // Also refresh clips if we are on the library view (in case a new clip was saved)
+        const fetchedClips = await invoke<ClipMetadata[]>('get_all_clips');
+        setClips(fetchedClips.sort((a, b) => b.date_recorded - a.date_recorded));
+      } catch (e) {}
+    }, 2000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const selectedClip = clips.find(c => c.id === selectedClipId);
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+    <div className="min-h-screen bg-[#000000] text-[#e5e2e1] font-sans flex flex-col md:flex-row antialiased overflow-hidden">
+      <TopBar />
+      
+      {/* Sidebar is hidden when a clip is selected, to give full space to player */}
+      {!selectedClipId && (
+        <Sidebar currentView={currentView} setCurrentView={setCurrentView} isRecording={isRecording} />
+      )}
 
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
+      {selectedClipId && selectedClip ? (
+        <ClipDetail clip={selectedClip} onBack={() => setSelectedClipId(null)} />
+      ) : currentView === 'library' ? (
+        <ClipLibrary clips={clips} onSelectClip={setSelectedClipId} />
+      ) : (
+        <Settings />
+      )}
+    </div>
   );
 }
 

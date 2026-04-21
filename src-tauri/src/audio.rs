@@ -118,6 +118,16 @@ pub fn start_audio_capture(
 
         // Wait for audio data to be available (100ms timeout)
         if h_event.wait_for_event(100).is_err() {
+            // Timeout implies no audio is currently playing on the system.
+            // We must feed FFmpeg silence to prevent the pipeline from stalling.
+            let silence_bytes = (config.sample_rate as usize / 10) * config.channels as usize * 4;
+            let silence = vec![0u8; silence_bytes];
+            if let Err(e) = pipe.write_all(&silence) {
+                eprintln!("[ClipSync Audio] Pipe write error (silence): {}", e);
+                stop_signal.store(true, Ordering::Relaxed);
+                break;
+            }
+            total_bytes += silence.len() as u64;
             continue;
         }
 

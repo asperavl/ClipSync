@@ -2,6 +2,7 @@ mod audio;
 mod capture;
 mod encoder;
 mod replay_buffer;
+mod clip_store;
 
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
@@ -46,6 +47,8 @@ struct AppState {
     replay_buffer: ReplayBuffer,
     /// Lock to prevent concurrent save operations
     saving: AtomicBool,
+    /// Store for managing clip metadata
+    clip_store: clip_store::ClipStore,
 }
 
 // ── Replay Buffer Control ──────────────────────────────────
@@ -234,7 +237,27 @@ fn save_clip(state: &AppState) {
     match state.replay_buffer.save_clip() {
         Ok(path) => {
             println!("[ClipSync] ✓ Clip saved: {}", path.display());
-            // TODO: Upload to Google Drive, copy share link to clipboard
+            
+            let id = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_secs().to_string();
+            let date_recorded = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_secs();
+            
+            let thumb = state.clip_store.generate_thumbnail(&path, &id).unwrap_or_default();
+            
+            let meta = clip_store::ClipMetadata {
+                id: id.clone(),
+                title: format!("Clip {}", id),
+                game_name: None,
+                date_recorded,
+                duration_secs: BUFFER_DURATION_SECS,
+                cloud_status: "local".to_string(),
+                is_favorite: false,
+                file_path: path.to_string_lossy().into_owned(),
+                thumbnail_path: thumb.to_string_lossy().into_owned(),
+            };
+            
+            if let Err(e) = state.clip_store.add_clip(meta) {
+                eprintln!("[ClipSync] Failed to add clip metadata: {}", e);
+            }
         }
         Err(e) => {
             eprintln!("[ClipSync] ✗ Failed to save clip: {}", e);
@@ -268,11 +291,31 @@ fn get_frame_count(state: tauri::State<'_, AppState>) -> u64 {
     state.frame_count.load(Ordering::Relaxed)
 }
 
+#[tauri::command]
+fn get_all_clips(state: tauri::State<'_, AppState>) -> Vec<clip_store::ClipMetadata> {
+    state.clip_store.get_clips()
+}
+
+#[tauri::command]
+fn update_clip_meta(state: tauri::State<'_, AppState>, clip: clip_store::ClipMetadata) -> Result<(), String> {
+    state.clip_store.update_clip(clip).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn delete_clip_meta(state: tauri::State<'_, AppState>, id: String) -> Result<(), String> {
+    state.clip_store.delete_clip(&id).map_err(|e| e.to_string())
+}
+
 // ── App Entry ──────────────────────────────────────────────
 
 fn get_output_dir() -> std::path::PathBuf {
     let videos_dir = dirs_next::video_dir().unwrap_or_else(|| std::path::PathBuf::from("."));
     videos_dir.join("ClipSync")
+}
+
+fn get_app_data_dir() -> std::path::PathBuf {
+    let data_dir = dirs_next::data_local_dir().unwrap_or_else(|| std::path::PathBuf::from("."));
+    data_dir.join("ClipSync").join("Metadata")
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -292,6 +335,7 @@ pub fn run() {
                 get_output_dir(),
             ),
             saving: AtomicBool::new(false),
+            clip_store: clip_store::ClipStore::new(get_app_data_dir()),
         })
         .setup(|app| {
             // ── System Tray ──────────────────────────────────────
@@ -399,6 +443,9 @@ pub fn run() {
             get_status,
             trigger_save_clip,
             get_frame_count,
+            get_all_clips,
+            update_clip_meta,
+            delete_clip_meta,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

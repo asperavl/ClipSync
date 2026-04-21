@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ClipSync - Clip Detail View</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#ffdad6",
+                    "on-surface-variant": "#cfc2d6",
+                    "primary": "#ddb7ff",
+                    "on-tertiary-fixed-variant": "#004f58",
+                    "inverse-surface": "#e5e2e1",
+                    "on-background": "#e5e2e1",
+                    "tertiary-fixed-dim": "#00daf3",
+                    "primary-fixed": "#f0dbff",
+                    "primary-container": "#b76dff",
+                    "primary-fixed-dim": "#ddb7ff",
+                    "secondary-fixed": "#bbf534",
+                    "secondary-fixed-dim": "#a1d806",
+                    "on-primary-fixed-variant": "#6900b3",
+                    "outline-variant": "#4d4354",
+                    "secondary-container": "#9ed500",
+                    "tertiary-fixed": "#9cf0ff",
+                    "tertiary-container": "#009fb2",
+                    "background": "#131313",
+                    "secondary": "#b9f231",
+                    "surface-bright": "#393939",
+                    "surface-dim": "#131313",
+                    "surface": "#131313",
+                    "surface-container-high": "#2a2a2a",
+                    "on-secondary-container": "#405800",
+                    "surface-container-highest": "#353534",
+                    "on-primary-fixed": "#2c0051",
+                    "on-tertiary": "#00363d",
+                    "outline": "#988d9f",
+                    "error": "#ffb4ab",
+                    "on-error": "#690005",
+                    "tertiary": "#00daf3",
+                    "surface-variant": "#353534",
+                    "inverse-primary": "#842bd2",
+                    "inverse-on-surface": "#313030",
+                    "error-container": "#93000a",
+                    "on-primary": "#490080",
+                    "on-primary-container": "#400071",
+                    "on-surface": "#e5e2e1",
+                    "surface-tint": "#ddb7ff",
+                    "surface-container-low": "#1c1b1b",
+                    "on-tertiary-container": "#002f35",
+                    "on-secondary": "#253500",
+                    "on-tertiary-fixed": "#001f24",
+                    "surface-container": "#201f1f",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-secondary-fixed": "#141f00",
+                    "on-secondary-fixed-variant": "#384e00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-gap": "12px",
+                    "gutter": "16px",
+                    "margin": "24px",
+                    "panel-padding": "20px",
+                    "unit": "4px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-bold": ["Inter"],
+                    "mono-label": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "mono-label": ["11px", {"lineHeight": "12px", "letterSpacing": "0.1em", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-[#000000] text-on-background font-body-md overflow-hidden antialiased">
+<!-- TopAppBar -->
+<header class="fixed z-50 bg-black/80 backdrop-blur-xl font-inter text-sm font-medium tracking-tight docked full-width top-0 h-12 border-b border-white/10 flat no-shadows flex justify-between items-center w-full px-4">
+<div class="flex items-center gap-4">
+<div class="text-purple-500 font-black text-xl italic">ClipSync</div>
+</div>
+<div class="flex-1 flex justify-start pl-8 max-w-md">
+<div class="flex items-center bg-white/5 rounded-md px-3 py-1.5 w-full border border-white/10 focus-within:border-purple-500 transition-colors">
+<span class="material-symbols-outlined text-zinc-400 text-[18px] mr-2">search</span>
+<input class="bg-transparent border-none outline-none text-zinc-200 text-sm w-full placeholder:text-zinc-500" placeholder="Search clips..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="minimize" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:bg-white/5 hover:text-purple-400 transition-all duration-200 rounded-md Active: opacity-80 scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="minimize">minimize</span>
+</button>
+<button aria-label="fullscreen" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:bg-white/5 hover:text-purple-400 transition-all duration-200 rounded-md Active: opacity-80 scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="fullscreen">fullscreen</span>
+</button>
+<button aria-label="close" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:bg-white/5 hover:text-purple-400 transition-all duration-200 rounded-md Active: opacity-80 scale-95">
+<span class="material-symbols-outlined text-[18px]" data-icon="close">close</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="z-40 bg-[#121212]/80 backdrop-blur-2xl font-inter text-[12px] font-bold uppercase tracking-widest fixed left-0 top-12 h-[calc(100vh-48px)] w-60 border-r border-white/10 shadow-[0px_0px_15px_rgba(168,85,247,0.15)] flex flex-col h-full py-4">
+<div class="px-6 mb-8 mt-2 hidden">
+<!-- style_brand_logo: hidden -->
+<span class="text-purple-500 font-black text-xl italic">ClipSync</span>
+</div>
+<div class="px-6 mb-6">
+<h2 class="text-white text-sm font-bold tracking-normal normal-case">ClipSync</h2>
+<p class="text-purple-500 text-[10px] uppercase tracking-wider mt-1 opacity-80">Pro Gamer Tier</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<!-- Active Tab: Library (Semantic Match for viewing a clip) -->
+<a class="bg-purple-500/10 text-purple-500 border-r-2 border-purple-500 flex items-center gap-3 px-6 py-4 transition-colors duration-200 Active: translate-x-1" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="video_library" style="font-variation-settings: 'FILL' 1;">video_library</span>
+<span>Library</span>
+</a>
+<a class="text-zinc-500 flex items-center gap-3 px-6 py-4 hover:bg-white/5 hover:text-white transition-colors duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="px-6 mb-6">
+<div class="bg-red-500/10 border border-red-500/30 rounded-md py-2 px-3 flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+<span class="text-red-500 text-[10px] uppercase font-bold tracking-widest">Recording...</span>
+</div>
+</div>
+<div class="mt-auto">
+<a class="text-zinc-500 flex items-center gap-3 px-6 py-4 hover:bg-white/5 hover:text-white transition-colors duration-200 border-t border-white/5" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="help">help</span>
+<span>Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-60 mt-12 h-[calc(100vh-48px)] flex bg-[#000000] relative">
+<!-- Left Area: Video Player (70%) -->
+<section class="w-[70%] h-full relative group bg-black flex flex-col">
+<!-- Video Container simulating borderless HTML5 player -->
+<div class="relative w-full h-full flex items-center justify-center bg-surface-container-lowest overflow-hidden">
+<!-- Placeholder for gameplay footage -->
+<div class="absolute inset-0 bg-cover bg-center opacity-80" data-alt="High quality screenshot of a fast-paced futuristic first-person shooter game with neon lights, particle effects, and a complex heads-up display." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBapOQWvfdotcdIGvXA-pZUXEXMfB6V2pCxoUnbe6ioMDnbu42AKUviup6gXxaopCQCojwwAYO-C4wy6jvMK_xa8zonymTUABcbnEX96ob9yD177eExDZ09kCzPRK3e7UFzWJ-kbHZ8ZRFmBhzj6HsSDVVaXPJbMSEIx1m7qQ_P82SMCh7NEY_5951ZIQEihgiNXqk1pA9tw0DVIPBsDuOX0ZVLcJt01hiI8SFwrVpZxEIpxyBzQvhNy2eVF2b1U5vQFgmukXNWzJJf');"></div>
+<!-- Player Controls Overlay (Stealth-Tech style) -->
+<div class="absolute bottom-0 w-full bg-gradient-to-t from-black/90 via-black/40 to-transparent pt-24 pb-6 px-8 flex flex-col gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<!-- Timeline -->
+<div class="w-full h-1 bg-surface-variant/50 rounded-full cursor-pointer relative">
+<!-- Buffer -->
+<div class="absolute left-0 top-0 h-full bg-surface-variant rounded-full w-3/4"></div>
+<!-- Progress (Acid Green accent for motion/life as per specs) -->
+<div class="absolute left-0 top-0 h-full bg-secondary rounded-full w-1/3 relative shadow-[0_0_8px_rgba(185,242,49,0.5)]">
+<div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md scale-0 group-hover:scale-100 transition-transform"></div>
+</div>
+</div>
+<!-- Controls Row -->
+<div class="flex justify-between items-center text-on-surface">
+<div class="flex items-center gap-6">
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">volume_up</span>
+</button>
+<span class="font-mono-label text-on-surface-variant tracking-wider">00:15 / 00:45</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">closed_caption</span>
+</button>
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+</button>
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">fullscreen</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Sync Indicator (Top Right Overlay) -->
+<div class="absolute top-6 right-6 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/5">
+<div class="w-3 h-3 rounded-full animate-spin" style="background: conic-gradient(from 0deg, #ddb7ff, #00daf3, #ddb7ff);"></div>
+<span class="font-mono-label text-on-surface-variant">SYNCING</span>
+</div>
+</section>
+<!-- Right Panel: Metadata Sidebar (30%) -->
+<aside class="w-[30%] h-full bg-[#121212]/90 backdrop-blur-3xl border-l border-outline-variant/20 flex flex-col overflow-y-auto">
+<!-- Header -->
+<div class="p-margin border-b border-outline-variant/20 flex items-center justify-between">
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span class="font-label-bold">BACK</span>
+</button>
+<!-- Favorite Toggle -->
+<button class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center border border-outline-variant/30 hover:bg-surface-container-high transition-all group">
+<span class="material-symbols-outlined text-[20px] text-primary group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</button>
+</div>
+<div class="p-margin flex flex-col gap-margin flex-1">
+<!-- Input Group: Title -->
+<div class="flex flex-col gap-stack-gap">
+<label class="font-mono-label text-on-surface-variant">CLIP TITLE</label>
+<div class="relative">
+<input class="w-full bg-[#000000] border border-outline-variant/50 rounded-lg px-4 py-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-inner" type="text" value="Clutch 1v3 Round 15"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant text-[18px]">edit</span>
+</div>
+</div>
+<!-- Input Group: Game Name -->
+<div class="flex flex-col gap-stack-gap">
+<label class="font-mono-label text-on-surface-variant">GAME</label>
+<div class="relative">
+<div class="absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded bg-surface-container flex items-center justify-center overflow-hidden">
+<!-- Game Icon Placeholder -->
+<img alt="Game icon" class="w-full h-full object-cover" data-alt="Small square icon showing a stylized glowing blue abstract geometric shape on a dark background, representing a video game logo." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKaYBaMd1YF9Wm5KpqgcMNjoN0vktV-sBciVD13IWbn06pbKKI6E1myf6Bh252bWoWXlu2Bred-Ic0TJKj-k2OcVd0duVcGyes_Oyy9xbhS32offdRlv4YyjiLmISoID0ogqcWJXSNrkf2EcDfNjrScYUzRpb2CZF-S0KQPc50fUh0ZRd0eqIahEOT5UnA6zM421UcNgezmPy5ACz8yKiK1je2udu-pPquLN-ol_W-fFQsO96yp-XQYDGfv_7dQOKoNd2Q6GOXt3TB"/>
+</div>
+<input class="w-full bg-[#000000] border border-outline-variant/50 rounded-lg pl-12 pr-4 py-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-inner" type="text" value="CyberStrike: Neon Protocol"/>
+</div>
+</div>
+<!-- Tags / Badges -->
+<div class="flex gap-2 flex-wrap mt-2">
+<span class="px-3 py-1 bg-primary/10 text-primary font-mono-label rounded border border-primary/20">HIGHLIGHT</span>
+<span class="px-3 py-1 bg-secondary/10 text-secondary font-mono-label rounded border border-secondary/20">HEADSHOT</span>
+</div>
+<!-- Divider -->
+<hr class="border-outline-variant/20 my-2"/>
+<!-- Stats Bento Grid -->
+<div class="flex flex-col gap-stack-gap">
+<label class="font-mono-label text-on-surface-variant">CLIP METADATA</label>
+<div class="grid grid-cols-3 gap-unit">
+<!-- Glassmorphism Card -->
+<div class="bg-white/[0.03] border border-white/10 rounded-lg p-3 flex flex-col items-center justify-center gap-1 hover:bg-white/[0.05] transition-colors">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">sd_storage</span>
+<span class="font-label-bold text-on-surface">68 MB</span>
+</div>
+<div class="bg-white/[0.03] border border-white/10 rounded-lg p-3 flex flex-col items-center justify-center gap-1 hover:bg-white/[0.05] transition-colors">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">aspect_ratio</span>
+<span class="font-label-bold text-on-surface">1080p</span>
+</div>
+<div class="bg-white/[0.03] border border-white/10 rounded-lg p-3 flex flex-col items-center justify-center gap-1 hover:bg-white/[0.05] transition-colors">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">speed</span>
+<span class="font-label-bold text-on-surface">60 FPS</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Actions -->
+<div class="p-margin border-t border-outline-variant/20 flex flex-col gap-stack-gap mt-auto bg-surface-dim/50">
+<!-- Primary Button (Neon Purple Accent mapped to inverse-primary for vibrancy) -->
+<button class="w-full bg-inverse-primary hover:bg-primary-container text-white font-label-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_0_20px_rgba(132,43,210,0.3)] hover:shadow-[0_0_25px_rgba(132,43,210,0.5)]">
+<span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+                    UPLOAD TO DRIVE
+                </button>
+<!-- Danger Button (Ghost style with red accent) -->
+<button class="w-full bg-transparent border border-error/30 hover:border-error hover:bg-error/10 text-error font-label-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all duration-300">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+                    DELETE CLIP
+                </button>
+</div>
+</aside>
+</main>
+</body></html>
